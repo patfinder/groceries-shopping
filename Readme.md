@@ -7,10 +7,15 @@ https://github.com/SeleniumHQ/selenium/tree/trunk/py
 
 pip install selenium
 
+Download:
+- chrome-linux64-116.0.5845.96.zip // Selenium Chrome driver
+
+
 ```shell
 
 # Create venv with
 python -m venv .venv
+
 
 # Use .venv to run the program
 
