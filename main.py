@@ -4,25 +4,20 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-import org.openqa.selenium.JavascriptExecutor;
+
 
 # sys.path += ['~/myrepos/groceries_shopping/chrome-linux64/chrome']
 def main():
     options = Options()
-    options.add_argument('user-data-dir=/home/vuong/myrepos/groceries_shopping/ChromeProfile')
-    options.add_experimental_option("detach", True)
+    # options.add_argument('user-data-dir=/home/vuong/myrepos/groceries_shopping/ChromeProfile')
+    # options.add_experimental_option('detach', True)
+    options.binary_location = '/usr/bin/google-chrome-stable'
+    options.add_experimental_option('debuggerAddress', '127.0.0.1:9222')
 
     try:
         # browser = webdriver.Chrome('drivers/chromedriver.exe', chrome_options=chrome_options)
         driver = webdriver.Chrome(options)
         # open_page(driver)
-
-        # assert "Python" in driver.title
-        # elem = driver.find_element(By.NAME, "q")
-        # elem.clear()
-        # elem.send_keys("pycon")
-        # elem.send_keys(Keys.RETURN)
-        # assert "No results found." not in driver.page_source
 
         load_all_products(driver)
 
@@ -34,24 +29,28 @@ def main():
 
 
 def open_page(driver):
-    # driver.get("https://google.com/")
-    # driver.get("https://www.walmart.ca/")
-    # driver.get("https://www.walmart.ca/en/browse/grocery/fruits-vegetables/fresh-fruits/10019_6000194327370_6000194327411")
-    # driver.get("https://www.nofrills.ca/print-flyer")
-    driver.get("https://mi.alpremium.ca/collections/fruit")
+    driver.get('https://google.com/')
+    driver.get('https://www.walmart.ca/')
+    driver.get('https://www.walmart.ca/en/browse/grocery/fruits-vegetables/fresh-fruits/10019_6000194327370_6000194327411')
+    driver.get('https://www.nofrills.ca/print-flyer')
+    driver.get('https://mi.alpremium.ca/collections/fruit')
     # driver.Manage().Window.Maximize()
 
 
 def get_items(driver):
-    products = driver.find_elements(By.CSS_SELECTOR, ".grid-item")
+    products = driver.find_elements(By.CSS_SELECTOR, '.grid-item')
     for product in products:
         try:
-            p_name = product.find_element(By.CSS_SELECTOR, ".product-bottom .product-title").text
-            image = product.find_element(By.CSS_SELECTOR, ".product-top .product-image img")
+            p_name = product.find_element(By.CSS_SELECTOR, '.product-bottom .product-title').text
+            image = product.find_element(By.CSS_SELECTOR, '.product-top .product-image img')
             image_url = image.get_attribute('data-srcset')
-            
-            try: details = product.find_element(By.CSS_SELECTOR, ".product-bottom .price-box .price-regular span").text
-            except: details = '<unknown>'
+            # not a visible product, skip
+            if not image.is_displayed():
+                continue
+            try:
+                details = product.find_element(By.CSS_SELECTOR, '.product-bottom .price-box .price-regular span').text
+            except:
+                details = '<unknown>'
 
             print(f'Name: {p_name}, Price: {details}, Image: {image_url}')
 
@@ -62,12 +61,40 @@ def get_items(driver):
 
 
 def load_all_products(driver):
+
+    def get_product_count():
+        products = driver.find_elements(By.CSS_SELECTOR, '.grid-item')
+        return len(products)
+
     try:
         scroll_btn = driver.find_element(By.CSS_SELECTOR, '.infinite-scrolling')
-        # Repeating scrolling 'load more' into view and wait, until ... TODO
-        scroll_to_view(driver, scroll_btn)
+
+        # Repeat N times
+        last_prod_count = 0
+        for i in range(0, 100):
+            # Repeating scrolling 'load more' into view and wait, until ... TODO
+            scroll_to_view(driver, scroll_btn)
+            # Must scroll up a bit
+            scroll_up(driver)
+
+            # Wait for the Dom to be updated
+            driver.implicitly_wait(1)
+
+            # Count the number of product items
+            product_count = get_product_count()
+            if product_count == last_prod_count:
+                # No more product loaded. Stop
+                # Also, check scroll_btn.text == "NO MORE PRODUCT"
+                break
+            else:
+                last_prod_count = product_count
+
     except Exception as ex:
         print(f'Exception: {ex}')
+
+
+def scroll_up(driver, pixels=-350):
+    driver.execute_script(f'window.scrollBy(0, {pixels})', '')
 
 
 def scroll_to_view(driver, elem):
@@ -79,7 +106,7 @@ def scroll_to_view(driver, elem):
     """
     try:
         # driver as JavascriptExecutor
-        driver.execute_script("arguments[0].scrollIntoView();", elem)
+        driver.execute_script('arguments[0].scrollIntoView();', elem)
     except Exception as ex:
         print(f'Exception: {ex}')
         pass
