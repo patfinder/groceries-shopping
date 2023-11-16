@@ -24,6 +24,8 @@ def main():
         # elem.send_keys(Keys.RETURN)
         # assert "No results found." not in driver.page_source
 
+        load_all_products(driver)
+
         get_items(driver)
 
         # driver.close()
@@ -57,12 +59,52 @@ def get_items(driver):
             print(f'Exception: {ex}')
     
     print('Finished')
-            
 
-def scroll_to_end(driver):
-    # driver as JavascriptExecutor
-    scroll_btn = driver.find_element(By.CSS_SELECTOR, '.infinite-scrolling')
-    driver.execute_script("arguments[0].scrollIntoView();", scroll_btn)
+
+def load_all_products(driver):
+    try:
+        scroll_btn = driver.find_element(By.CSS_SELECTOR, '.infinite-scrolling')
+        # Repeating scrolling 'load more' into view and wait, until ... TODO
+        scroll_to_view(driver, scroll_btn)
+    except Exception as ex:
+        print(f'Exception: {ex}')
+
+
+def scroll_to_view(driver, elem):
+    """
+    Scroll an element into view
+    :param driver: web driver
+    :param elem: element to scroll to view
+    :return:
+    """
+    try:
+        # driver as JavascriptExecutor
+        driver.execute_script("arguments[0].scrollIntoView();", elem)
+    except Exception as ex:
+        print(f'Exception: {ex}')
+        pass
+
+
+def is_element_in_viewport(driver, elem):
+    """
+    Check if an element (elem) is visible in the view port
+    :param driver: web driver
+    :param elem: element to check
+    :return: True if visible, False otherwise
+    """
+    driver.execute_script("""
+        var elem = arguments[0],
+              box = elem.getBoundingClientRect(),
+              cx = box.left + box.width / 2,
+              cy = box.top + box.height / 2,
+              e = document.elementFromPoint(cx, cy);
+        for (; e; e = e.parentElement) {
+              if (e === elem)
+                    return true;
+        }
+        return false;
+    """, elem)
+
 
 if __name__ == '__main__':
     main()
