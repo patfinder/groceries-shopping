@@ -7,6 +7,16 @@ https://github.com/SeleniumHQ/selenium/tree/trunk/py
 
 pip install selenium
 
+```shell
+
+# Create venv with
+python -m venv .venv
+
+# Use .venv to run the program
+
+# Use venv in vscode: C-s-p > Python: Create Environment
+
+```
 
 
 ```javascript
@@ -17,18 +27,19 @@ tag sfml-content-wrap
 ```
 
 
-
-
 <!-- ====================================================================================== -->
-<!-- Al Premium -->
 
-<!-- Product block -->
+## Al Premium website
+
+
+
+ // Product block
 class: grid-item
 
-<!-- Product Image -->
+// Product Image
 .product-top .product-image
 
-<!-- Price -->
+// Price
 .product-bottom .price-box .price-regular span [0]  -- Current price
 .product-bottom .price-box .price-regular span [1]  -- Previous price
 
