@@ -1,9 +1,12 @@
+import re
 import sys
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
+
+from dbconnect import Product, add_products
 
 
 # sys.path += ['~/myrepos/groceries_shopping/chrome-linux64/chrome']
@@ -21,7 +24,8 @@ def main():
 
         load_all_products(driver)
 
-        get_items(driver)
+        products = get_items(driver)
+        add_products(products)
 
         # driver.close()
     except Exception as ex:
@@ -37,27 +41,60 @@ def open_page(driver):
     # driver.Manage().Window.Maximize()
 
 
-def get_items(driver):
-    products = driver.find_elements(By.CSS_SELECTOR, '.grid-item')
-    for product in products:
-        try:
-            p_name = product.find_element(By.CSS_SELECTOR, '.product-bottom .product-title').text
-            image = product.find_element(By.CSS_SELECTOR, '.product-top .product-image img')
-            image_url = image.get_attribute('data-srcset')
-            # not a visible product, skip
-            if not image.is_displayed():
-                continue
-            try:
-                details = product.find_element(By.CSS_SELECTOR, '.product-bottom .price-box .price-regular span').text
-            except:
-                details = '<unknown>'
+ALPREMIUM = 'alpremium'
 
-            print(f'Name: {p_name}, Price: {details}, Image: {image_url}')
+
+def parse_price(price_box_text):
+    try:
+        # '$0.32 / ea\n$0.79/lb'
+        res = re.match(r'^\$([.0-9]+) (.+)', price_box_text)
+        return res.group(2).lstrip('/ ')
+    except Exception:
+        # TODO: unknown unit
+        return '<unknown>'
+
+
+def get_items(driver):
+    web_products = driver.find_elements(By.CSS_SELECTOR, '.grid-item')
+    products = []
+    for web_product in web_products:
+        try:
+            name_el = web_product.find_element(By.CSS_SELECTOR, '.product-bottom .product-title')
+            # Check if product is visible
+            if not name_el.is_displayed():
+                continue
+
+            name = name_el.text
+            url = (web_product.find_element(By.CSS_SELECTOR, '.product-top>.product-image>a.product-grid-image')
+                   .get_attribute('href'))
+            image = web_product.find_element(By.CSS_SELECTOR, '.product-top>.product-image img')
+            image_url = image.get_attribute('data-srcset')
+
+            # Get price
+            price_els = web_product.find_elements(By.CSS_SELECTOR,
+                                                  '.product-bottom .price-box .price-regular>span')
+            price_el = next(filter(lambda e: e.get_attribute('style') == '', price_els))
+            price = float(price_el.text.strip('$'))
+            # unit_text is something like: '$0.32 / ea\n$0.79/lb'
+            unit_text = web_product.find_element(By.CSS_SELECTOR, '.product-bottom .price-box>div').text
+            unit = parse_price(unit_text)
+
+            # TODO: retailer, categories
+            product = Product(id=url, retailer=ALPREMIUM, name=name, categories='fruit', image=image_url, url=url,
+                              price=price, unit=unit)
+            products.append(product)
+
+            # TODO: test
+            if len(products) >= 10:
+                return products
+
+            # print(f'Name: {name}, Price: {details}, Image: {image_url}')
 
         except Exception as ex:
             print(f'Exception: {ex}')
-    
+
     print('Finished')
+    return products
 
 
 def load_all_products(driver):
@@ -70,7 +107,7 @@ def load_all_products(driver):
         scroll_btn = driver.find_element(By.CSS_SELECTOR, '.infinite-scrolling')
 
         # Repeat N times
-        last_prod_count = 0
+        # last_prod_count = 0
         for i in range(0, 100):
             # Repeating scrolling 'load more' into view and wait, until ... TODO
             scroll_to_view(driver, scroll_btn)
@@ -82,12 +119,13 @@ def load_all_products(driver):
 
             # Count the number of product items
             product_count = get_product_count()
-            if product_count == last_prod_count:
+            # product_count == last_prod_count
+            if scroll_btn.text == "NO MORE PRODUCT":
                 # No more product loaded. Stop
                 # Also, check scroll_btn.text == "NO MORE PRODUCT"
                 break
-            else:
-                last_prod_count = product_count
+            # else:
+            #     last_prod_count = product_count
 
     except Exception as ex:
         print(f'Exception: {ex}')

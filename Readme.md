@@ -5,7 +5,9 @@ https://selenium-python.readthedocs.io/getting-started.html
 
 https://github.com/SeleniumHQ/selenium/tree/trunk/py
 
-pip install selenium
+https://docs.sqlalchemy.org/en/20/orm/quickstart.html#emit-create-table-ddl
+
+packages: selenium, sqlalchemy, mysql
 
 Download:
 - chrome-linux64-116.0.5845.96.zip // Selenium Chrome driver
