@@ -1,7 +1,8 @@
+from datetime import datetime
 from typing import List
 from typing import Optional
 from sqlalchemy import create_engine, select
-from sqlalchemy import ForeignKey, String, Double, Float
+from sqlalchemy import ForeignKey, String, Double, Float, DateTime
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.orm import Session
 
@@ -20,6 +21,7 @@ class Product(Base):
     url: Mapped[str] = mapped_column(String(200))
     price: Mapped[float] = mapped_column(Float)
     unit: Mapped[str] = mapped_column(String(30))
+    created_time: Mapped[datetime] = mapped_column(DateTime)
 
     def __repr__(self) -> str:
         return f'Product(id={self.id!r}, name={self.name!r})'
@@ -39,7 +41,7 @@ class Manufacturer(Base):
 
 
 def add_products(products):
-    engine = create_engine(f'mysql+pymysql://groceries:groceries_pass@localhost/groceries_db', echo=True)
+    engine = create_engine(f'mysql+pymysql://groceries:groceries_pass@localhost/groceries_db', )  # echo=True
     Base.metadata.create_all(engine)
 
     with Session(engine) as session:
