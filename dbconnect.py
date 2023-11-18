@@ -20,6 +20,7 @@ class Product(Base):
     image: Mapped[str] = mapped_column(String(200))
     url: Mapped[str] = mapped_column(String(200))
     price: Mapped[float] = mapped_column(Float)
+    old_price: Mapped[float] = mapped_column(Float)
     unit: Mapped[str] = mapped_column(String(30))
     created_time: Mapped[datetime] = mapped_column(DateTime)
 

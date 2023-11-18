@@ -2,9 +2,12 @@
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-# from selenium.webdriver.common.keys import Keys
 
-from alpremium import process_site
+import alpremium
+import nofrills
+
+
+# from selenium.webdriver.common.keys import Keys
 
 
 # sys.path += ['~/myrepos/groceries_shopping/chrome-linux64/chrome']
@@ -20,7 +23,8 @@ def main():
         driver = webdriver.Chrome(options)
         # open_page(driver)
 
-        process_site(driver)
+        # alpremium.process_site(driver)
+        nofrills.process_site(driver)
 
         # driver.close()
     except Exception as ex:

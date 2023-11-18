@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 from common import scroll_up, scroll_to_view
 from dbconnect import Product, add_products
 
-ALPREMIUM = 'alpremium'
+RETAILER_NAME = 'alpremium'
 
 
 def load_all_products(driver):
@@ -64,6 +64,9 @@ def get_items(driver, retailer, category):
                                                   '.product-bottom .price-box .price-regular>span')
             price_el = next(filter(lambda e: e.get_attribute('style') == '', price_els))
             price = float(price_el.text.strip('$'))
+
+            # TODO: old-price
+
             # unit_text is something like: '$0.32 / ea\n$0.79/lb'
             unit_text = web_product.find_element(By.CSS_SELECTOR, '.product-bottom .price-box>div').text
             unit = parse_price(unit_text)
@@ -110,7 +113,7 @@ def process_site(driver):
 
     for url in urls:
         print(f'Start processing for url: {url}')
-        process_category(driver, ALPREMIUM, url)
+        process_category(driver, RETAILER_NAME, url)
         print(f'Processing done for url: {url}')
 
 
