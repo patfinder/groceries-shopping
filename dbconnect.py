@@ -14,6 +14,7 @@ class Product(Base):
     __tablename__ = 'product'
 
     id: Mapped[str] = mapped_column(String(200), primary_key=True)
+    created_time: Mapped[datetime] = mapped_column(DateTime, primary_key=True)
     retailer: Mapped[str] = mapped_column(String(100))
     name: Mapped[str] = mapped_column(String(100))
     categories: Mapped[str] = mapped_column(String(100))
@@ -22,7 +23,6 @@ class Product(Base):
     price: Mapped[float] = mapped_column(Float)
     old_price: Mapped[float] = mapped_column(Float)
     unit: Mapped[str] = mapped_column(String(30))
-    created_time: Mapped[datetime] = mapped_column(DateTime)
 
     def __repr__(self) -> str:
         return f'Product(id={self.id!r}, name={self.name!r})'
@@ -42,7 +42,7 @@ class Manufacturer(Base):
 
 
 def add_products(products):
-    engine = create_engine(f'mysql+pymysql://groceries:groceries_pass@localhost/groceries_db', )  # echo=True
+    engine = create_engine(f'mysql+pymysql://groceries:groceries_pass@localhost/groceries_db', echo=False)
     Base.metadata.create_all(engine)
 
     with Session(engine) as session:

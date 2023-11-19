@@ -1,3 +1,17 @@
+
+def open_and_wait(driver, url, waiter=None):
+    """
+    Open specified page and wait for ready (if provided)
+    :param driver: web driver
+    :param url: Url to open
+    :param waiter: wait function to be called.
+    :return: None
+    """
+    driver.get(url)
+    if waiter:
+        waiter()
+
+
 def scroll_up(driver, pixels=-350):
     driver.execute_script(f'window.scrollBy(0, {pixels})', '')
 
