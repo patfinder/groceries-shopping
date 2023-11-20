@@ -22,7 +22,7 @@ class Product(Base):
     url: Mapped[str] = mapped_column(String(200))
     price: Mapped[float] = mapped_column(Float)
     old_price: Mapped[float] = mapped_column(Float)
-    unit: Mapped[str] = mapped_column(String(30))
+    unit: Mapped[str] = mapped_column(String(20))
 
     def __repr__(self) -> str:
         return f'Product(id={self.id!r}, name={self.name!r})'

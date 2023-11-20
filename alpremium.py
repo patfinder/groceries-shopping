@@ -71,9 +71,8 @@ def get_items(driver, retailer, category):
             unit_text = web_product.find_element(By.CSS_SELECTOR, '.product-bottom .price-box>div').text
             unit = parse_price(unit_text)
 
-            # TODO: retailer, categories
             product = Product(retailer=retailer, name=name, categories=category, image=image_url, url=url,
-                              price=price, unit=unit, created_time=datetime.now())
+                              price=price, old_price=price, unit=unit, created_time=datetime.now())
             products.append(product)
 
             # TODO: test
@@ -104,11 +103,11 @@ def process_category(driver, retailer, url):
 def process_site(driver):
     urls = [
         'https://mi.alpremium.ca/collections/fruit',
-        'https://mi.alpremium.ca/collections/vegetable',
-        'https://mi.alpremium.ca/collections/fresh-meat',
-        'https://mi.alpremium.ca/collections/seafood',
-        'https://mi.alpremium.ca/collections/frozen-food',
-        'https://mi.alpremium.ca/collections/grocery',
+        # 'https://mi.alpremium.ca/collections/vegetable',
+        # 'https://mi.alpremium.ca/collections/fresh-meat',
+        # 'https://mi.alpremium.ca/collections/seafood',
+        # 'https://mi.alpremium.ca/collections/frozen-food',
+        # 'https://mi.alpremium.ca/collections/grocery',
     ]
 
     for url in urls:

@@ -137,7 +137,7 @@ def get_items(driver, retailer, category):
             unit = web_product.find_element(By.CSS_SELECTOR, 'p[data-testid="product-package-size"]').text
             unit = unit.split(',')[0].lstrip('1 ')
 
-            product = Product(id=url, retailer=retailer, name=name, categories=category, image=image, url=url,
+            product = Product(retailer=retailer, name=name, categories=category, image=image, url=url,
                               price=price, old_price=old_price, unit=unit, created_time=datetime.now())
             products.append(product)
 
