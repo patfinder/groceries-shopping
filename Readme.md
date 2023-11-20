@@ -21,7 +21,7 @@ python -m venv .venv
 
 # Use .venv to run the program
 
-# Use venv in vscode: C-s-p > Python: Create Environment
+# Use venv in vscode: C-S-p > Python: Create/Apply environment
 
 ```
 

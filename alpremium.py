@@ -72,7 +72,7 @@ def get_items(driver, retailer, category):
             unit = parse_price(unit_text)
 
             # TODO: retailer, categories
-            product = Product(id=url, retailer=retailer, name=name, categories=category, image=image_url, url=url,
+            product = Product(retailer=retailer, name=name, categories=category, image=image_url, url=url,
                               price=price, unit=unit, created_time=datetime.now())
             products.append(product)
 

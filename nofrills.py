@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 
 from selenium.common import NoSuchElementException
@@ -8,20 +9,16 @@ from dbconnect import Product, add_products
 RETAILER_NAME = 'nofrills'
 
 
-def test_nofrills(driver):
-    pass
-
-
 def process_site(driver):
     # dict of category and url
     urls = {
         'fresh-vegetables': 'https://www.nofrills.ca/food/fruits-vegetables/fresh-vegetables/c/28195',
-        'fresh-fruits': 'https://www.nofrills.ca/food/fruits-vegetables/fresh-fruits/c/28194',
-        'meat': 'https://www.nofrills.ca/food/meat/c/27998',
-        'dairy-eggs': 'https://www.nofrills.ca/food/dairy-eggs/c/28003',
-        'fish-seafood': 'https://www.nofrills.ca/food/fish-seafood/c/27999',
-        'pantry': 'https://www.nofrills.ca/food/pantry/c/28006',
-        'drinks': 'https://www.nofrills.ca/food/drinks/c/28004',
+        # 'fresh-fruits': 'https://www.nofrills.ca/food/fruits-vegetables/fresh-fruits/c/28194',
+        # 'meat': 'https://www.nofrills.ca/food/meat/c/27998',
+        # 'dairy-eggs': 'https://www.nofrills.ca/food/dairy-eggs/c/28003',
+        # 'fish-seafood': 'https://www.nofrills.ca/food/fish-seafood/c/27999',
+        # 'pantry': 'https://www.nofrills.ca/food/pantry/c/28006',
+        # 'drinks': 'https://www.nofrills.ca/food/drinks/c/28004',
     }
 
     for category, url in urls.items():
@@ -36,6 +33,10 @@ def process_all_pages(driver, category, url):
         try:
             # Wait for 30 seconds
             for i in range(30):
+                # Wait at least 1 second
+                driver.implicitly_wait(1)
+                time.sleep(1)
+
                 # Check if "No items are available." item exist
                 no_item = driver.find_elements(By.CSS_SELECTOR, 'p[data-testid="sub-heading"]')
                 if len(no_item) and no_item[0].text == 'No items are available.':
@@ -45,9 +46,6 @@ def process_all_pages(driver, category, url):
                 web_products = driver.find_elements(By.CSS_SELECTOR, 'div[data-testid="product-grid"]>div')
                 if len(web_products):
                     break
-
-                # Otherwise, wait
-                driver.implicitly_wait(1)
 
         except Exception:
             pass
@@ -65,6 +63,9 @@ def process_all_pages(driver, category, url):
             else:
                 # no more items
                 break
+
+            # TODO: DEBUG
+            break
 
         except Exception as ex:
             print(f'Exception: {ex}')
@@ -139,6 +140,9 @@ def get_items(driver, retailer, category):
             product = Product(id=url, retailer=retailer, name=name, categories=category, image=image, url=url,
                               price=price, old_price=old_price, unit=unit, created_time=datetime.now())
             products.append(product)
+
+            # TODO: DEBUG
+            return products
 
         except Exception as ex:
             print(f'Exception: {ex}')

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List
 from typing import Optional
 from sqlalchemy import create_engine, select
-from sqlalchemy import ForeignKey, String, Double, Float, DateTime
+from sqlalchemy import ForeignKey, BigInteger, String, Double, Float, DateTime
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.orm import Session
 
@@ -11,12 +11,12 @@ class Base(DeclarativeBase):
 
 
 class Product(Base):
-    __tablename__ = 'product'
+    __tablename__ = 'products_product'
 
-    id: Mapped[str] = mapped_column(String(200), primary_key=True)
-    created_time: Mapped[datetime] = mapped_column(DateTime, primary_key=True)
-    retailer: Mapped[str] = mapped_column(String(100))
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(100))
+    created_time: Mapped[datetime] = mapped_column(DateTime)
+    retailer: Mapped[str] = mapped_column(String(100))
     categories: Mapped[str] = mapped_column(String(100))
     image: Mapped[str] = mapped_column(String(200))
     url: Mapped[str] = mapped_column(String(200))
