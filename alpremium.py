@@ -75,7 +75,6 @@ def get_items(driver, retailer, category):
                               price=price, old_price=price, unit=unit, created_time=datetime.now())
             products.append(product)
 
-            # TODO: test
             # if len(products) >= 10:
             #     return products
 

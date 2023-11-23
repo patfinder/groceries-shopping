@@ -23,7 +23,7 @@ def main():
         driver = webdriver.Chrome(options)
         # open_page(driver)
 
-        # alpremium.process_site(driver)
+        alpremium.process_site(driver)
         nofrills.process_site(driver)
 
         # driver.close()

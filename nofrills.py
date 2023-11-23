@@ -1,7 +1,7 @@
 import time
 from datetime import datetime
 
-from selenium.common import NoSuchElementException
+from selenium.common import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from common import scroll_to_view, scroll_up, open_and_wait
 from dbconnect import Product, add_products
@@ -44,11 +44,21 @@ def process_all_pages(driver, category, url):
 
                 # Check if some product exist.
                 web_products = driver.find_elements(By.CSS_SELECTOR, 'div[data-testid="product-grid"]>div')
-                if len(web_products):
-                    break
+                if not web_products:
+                    continue
 
-        except Exception:
-            pass
+                try:
+                    # Access first element
+                    web_products[0].find_element(By.CSS_SELECTOR, 'h3[data-testid="product-title"]')
+                    # No error, stop
+                    break
+                except NoSuchElementException:
+                    continue
+                except StaleElementReferenceException:
+                    continue
+
+        except Exception as ex:
+            print(f'Exception while waiting: {ex}')
 
     # Loop 100 page?
     for page in range(1, 101):
@@ -63,9 +73,6 @@ def process_all_pages(driver, category, url):
             else:
                 # no more items
                 break
-
-            # TODO: DEBUG
-            break
 
         except Exception as ex:
             print(f'Exception: {ex}')
@@ -140,9 +147,6 @@ def get_items(driver, retailer, category):
             product = Product(retailer=retailer, name=name, categories=category, image=image, url=url,
                               price=price, old_price=old_price, unit=unit, created_time=datetime.now())
             products.append(product)
-
-            # TODO: DEBUG
-            return products
 
         except Exception as ex:
             print(f'Exception: {ex}')
